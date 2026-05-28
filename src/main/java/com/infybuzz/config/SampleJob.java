@@ -11,18 +11,18 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.infybuzz.listener.FirstJobListener;
-import com.infybuzz.listener.FirstStepListener;
-import com.infybuzz.processor.FirstItemProcessor;
-import com.infybuzz.reader.FirstItemReader;
-import com.infybuzz.service.SecondTasklet;
+import com.infybuzz.model.StudentCsv;
 import com.infybuzz.writer.FirstItemWriter;
 
 @Configuration
@@ -34,20 +34,20 @@ public class SampleJob {
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 	
-	@Autowired
-	private SecondTasklet secondTasklet;
+//	@Autowired
+//	private SecondTasklet secondTasklet;
 	
-	@Autowired
-	private FirstJobListener firstJobListener;
+//	@Autowired
+//	private FirstJobListener firstJobListener;
 	
-	@Autowired
-	private FirstStepListener firstStepListener;
+//	@Autowired
+//	private FirstStepListener firstStepListener;
 
-	@Autowired
-	private FirstItemReader firstItemReader;
+//	@Autowired
+//	private FirstItemReader firstItemReader;
 	
-	@Autowired
-	private FirstItemProcessor firstItemProcessor;
+//	@Autowired
+//	private FirstItemProcessor firstItemProcessor;
 	
 	@Autowired
 	private FirstItemWriter firstItemWriter;
@@ -64,8 +64,8 @@ public class SampleJob {
 		return new JobBuilder("First Job", jobRepository)
 				.incrementer(new RunIdIncrementer())
 				.start(firstStep())
-				.next(secondStep())
-				.listener(firstJobListener)
+//				.next(secondStep())
+//				.listener(firstJobListener)
 				.build();
 	}
 	public Step firstStep() {
@@ -76,19 +76,19 @@ public class SampleJob {
 		 */
 		return new StepBuilder("First Step", jobRepository)
 				.tasklet(firstTask(), transactionManager)
-				.listener(firstStepListener)
+//				.listener(firstStepListener)
 				.build();
 	}
-	public Step secondStep() {
+//	public Step secondStep() {
 		/*
 		 * stepBuilderFactory.get("Second Step")
 		 * .tasklet()
 		 * .build()
 		 */
-		return new StepBuilder("Second Step", jobRepository)
-				.tasklet(secondTasklet, transactionManager)
-				.build();
-	}
+//		return new StepBuilder("Second Step", jobRepository)
+//				.tasklet(secondTasklet, transactionManager)
+//				.build();
+//	}
 	
 	public Tasklet firstTask() { 
 		
@@ -116,10 +116,32 @@ public class SampleJob {
 	
 	public Step firstChunkStep() { 
 		return new StepBuilder("First Chunk Step", jobRepository)
-				.<Integer, Long>chunk(4, transactionManager)
-				.reader(firstItemReader)
-				.processor(firstItemProcessor)
+				.<StudentCsv, StudentCsv>chunk(3, transactionManager)
+				.reader(flatFileItemReader())
+//				.processor(firstItemProcessor)
 				.writer(firstItemWriter)
 				.build();
+	}
+	
+	public FlatFileItemReader<StudentCsv> flatFileItemReader() { 
+		FlatFileItemReader<StudentCsv> flatFileItemReader = 
+				new FlatFileItemReader<StudentCsv>();
+		flatFileItemReader.setResource(new ClassPathResource("InputFiles/students.csv"));
+		flatFileItemReader.setLineMapper(new DefaultLineMapper<StudentCsv>() { 
+			{
+				setLineTokenizer(new DelimitedLineTokenizer() { 
+					{
+						setNames("ID", "First Name", "Last Name", "Email");
+					}
+				});
+				setFieldSetMapper(new BeanWrapperFieldSetMapper<StudentCsv>() {
+					{
+						setTargetType(StudentCsv.class);
+					}
+				});
+			}
+		});
+		flatFileItemReader.setLinesToSkip(1);
+		return flatFileItemReader;
 	}
 }
