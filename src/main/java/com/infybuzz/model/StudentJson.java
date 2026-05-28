@@ -1,9 +1,12 @@
 package com.infybuzz.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class StudentJson {
 	private Long id;
 	private String firstName;
-	private String lastName;
+//	private String lastName;
 	private String email;
 	public Long getId() {
 		return id;
@@ -17,12 +20,12 @@ public class StudentJson {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+//	public String getLastName() {
+//		return lastName;
+//	}
+//	public void setLastName(String lastName) {
+//		this.lastName = lastName;
+//	}
 	public String getEmail() {
 		return email;
 	}
@@ -31,7 +34,7 @@ public class StudentJson {
 	}
 	@Override
 	public String toString() {
-		return "StudentJson [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+		return "StudentJson [id=" + id + ", firstName=" + firstName + ", email=" + email
 				+ "]";
 	}
 	
