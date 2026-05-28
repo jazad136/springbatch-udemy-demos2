@@ -104,8 +104,8 @@ public class SampleJob {
 		defaultLineMapper.setFieldSetMapper(fieldSetMapper);
 		flatFileItemReader.setLineMapper(defaultLineMapper);
 		flatFileItemReader.setLinesToSkip(1);
-		return flatFileItemReader;
 		*/
+		return flatFileItemReader;
 		
 	}
 }
