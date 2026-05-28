@@ -13,6 +13,8 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.item.json.JacksonJsonObjectReader;
+import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +23,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.infybuzz.model.StudentCsv;
+import com.infybuzz.model.StudentJson;
 import com.infybuzz.writer.FirstItemWriter;
 @Configuration
 public class SampleJob {
@@ -61,8 +64,9 @@ public class SampleJob {
 	
 	public Step firstChunkStep() { 
 		return new StepBuilder("First Chunk Step", jobRepository)
-				.<StudentCsv, StudentCsv>chunk(3, transactionManager)
-				.reader(flatFileItemReader(null))
+				.<StudentJson, StudentJson>chunk(3, transactionManager)
+//				.reader(flatFileItemReader(null))
+				.reader(jsonItemReader(null))
 //				.processor(firstItemProcessor)
 				.writer(firstItemWriter)
 				.build();
@@ -107,5 +111,17 @@ public class SampleJob {
 		*/
 		return flatFileItemReader;
 		
+	}
+	
+	@StepScope
+	@Bean
+	public JsonItemReader<StudentJson> jsonItemReader(
+			@Value("#{jobParameters['inputFile']}") ClassPathResource classPathResource) { 
+		
+		JsonItemReader<StudentJson> jsonItemReader = new JsonItemReader<StudentJson>();
+		jsonItemReader.setResource(classPathResource);
+		jsonItemReader.setJsonObjectReader(new JacksonJsonObjectReader<>(StudentJson.class));
+		
+		return jsonItemReader;
 	}
 }
