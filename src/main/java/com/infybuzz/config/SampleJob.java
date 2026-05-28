@@ -92,7 +92,20 @@ public class SampleJob {
 				});
 			}
 		});
+		/* For reference
+		DefaultLineMapper<StudentCsv> defaultLineMapper = new DefaultLineMapper<StudentCsv>();
+		DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
+		delimitedLineTokenizer.setNames("ID", "First Name", "Last Name", "Email");
+
+		defaultLineMapper.setLineTokenizer(delimitedLineTokenizer);
+
+		BeanWrapperFieldSetMapper<StudentCsv> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+		fieldSetMapper.setTargetType(StudentCsv.class);
+		defaultLineMapper.setFieldSetMapper(fieldSetMapper);
+		flatFileItemReader.setLineMapper(defaultLineMapper);
 		flatFileItemReader.setLinesToSkip(1);
 		return flatFileItemReader;
+		*/
+		
 	}
 }
