@@ -55,58 +55,6 @@ public class SampleJob {
 	private static final Logger logger = LoggerFactory.getLogger(SampleJob.class);
 
 	@Bean
-	public Job firstJob() { 
-		/*
-		 * jobBuilderFactory.get("First Job")
-		 * .start(firstStep())
-		 * .next(secondStep())
-		 */
-		return new JobBuilder("First Job", jobRepository)
-				.incrementer(new RunIdIncrementer())
-				.start(firstStep())
-//				.next(secondStep())
-//				.listener(firstJobListener)
-				.build();
-	}
-	public Step firstStep() {
-		/*
-		 * stepBuilderFactory.get("First Step")
-		 * .tasklet()
-  		 * .build()
-		 */
-		return new StepBuilder("First Step", jobRepository)
-				.tasklet(firstTask(), transactionManager)
-//				.listener(firstStepListener)
-				.build();
-	}
-//	public Step secondStep() {
-		/*
-		 * stepBuilderFactory.get("Second Step")
-		 * .tasklet()
-		 * .build()
-		 */
-//		return new StepBuilder("Second Step", jobRepository)
-//				.tasklet(secondTasklet, transactionManager)
-//				.build();
-//	}
-	
-	public Tasklet firstTask() { 
-		
-		  return new Tasklet() { 
-		  	public RepeatStatus execute(StepContribution contribution, ChunkContext context) { 
-		  		System.err.println("This is first tasklet step");
-//		  		logger.warn("This is first tasklet step");
-		  		System.err.println("SEC = " + context.getStepContext().getStepExecutionContext());
-		  		return RepeatStatus.FINISHED;
-		  	}
-		  };
-		 
-//		return (contribution, context) -> { 
-//			System.out.println("This is first tasklet step");
-//			return RepeatStatus.FINISHED;
-//		};
-	}
-	@Bean
 	public Job secondJob() {
 		return new JobBuilder("Second Job", jobRepository)
 				.incrementer(new RunIdIncrementer())
