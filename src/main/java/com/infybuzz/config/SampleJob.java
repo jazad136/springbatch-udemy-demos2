@@ -121,7 +121,8 @@ public class SampleJob {
 		JsonItemReader<StudentJson> jsonItemReader = new JsonItemReader<StudentJson>();
 		jsonItemReader.setResource(classPathResource);
 		jsonItemReader.setJsonObjectReader(new JacksonJsonObjectReader<>(StudentJson.class));
-		
+		jsonItemReader.setCurrentItemCount(2);
+		jsonItemReader.setMaxItemCount(8);
 		return jsonItemReader;
 	}
 }
