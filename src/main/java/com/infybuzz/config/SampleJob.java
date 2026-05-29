@@ -15,15 +15,18 @@ import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
+import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.infybuzz.model.StudentCsv;
 import com.infybuzz.model.StudentJson;
+import com.infybuzz.model.StudentXml;
 import com.infybuzz.writer.FirstItemWriter;
 @Configuration
 public class SampleJob {
@@ -64,9 +67,10 @@ public class SampleJob {
 	
 	public Step firstChunkStep() { 
 		return new StepBuilder("First Chunk Step", jobRepository)
-				.<StudentJson, StudentJson>chunk(3, transactionManager)
+				.<StudentXml, StudentXml>chunk(3, transactionManager)
 //				.reader(flatFileItemReader(null))
-				.reader(jsonItemReader(null))
+//				.reader(jsonItemReader(null))
+				.reader(staxEventItemReader(null))
 //				.processor(firstItemProcessor)
 				.writer(firstItemWriter)
 				.build();
@@ -116,12 +120,29 @@ public class SampleJob {
 	@StepScope
 	@Bean
 	public JsonItemReader<StudentJson> jsonItemReader(
-			@Value("#{jobParameters['inputFile']}") ClassPathResource classPathResource) { 
-		
+			@Value("#{jobParameters['inputFile']}") ClassPathResource classPathResource) 
+	{ 	
 		JsonItemReader<StudentJson> jsonItemReader = new JsonItemReader<StudentJson>();
 		jsonItemReader.setResource(classPathResource);
 		jsonItemReader.setJsonObjectReader(new JacksonJsonObjectReader<>(StudentJson.class));
 		
 		return jsonItemReader;
+	}
+	
+	@StepScope
+	@Bean
+	public StaxEventItemReader<StudentXml> staxEventItemReader(
+			@Value("#{jobParameters['inputFile']}") ClassPathResource classPathResource) 
+	{
+		StaxEventItemReader<StudentXml> staxEventItemReader = 
+				new StaxEventItemReader<StudentXml>();
+		staxEventItemReader.setResource(classPathResource);
+		staxEventItemReader.setFragmentRootElementName("student");
+		staxEventItemReader.setUnmarshaller(new Jaxb2Marshaller() {
+			{
+				setClassesToBeBound(StudentXml.class);
+			}
+		});
+		return staxEventItemReader;
 	}
 }
