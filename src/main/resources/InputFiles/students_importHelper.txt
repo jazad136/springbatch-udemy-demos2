@@ -1,0 +1,11 @@
+
+# First remove the first line from your students.csv file
+# We placed the end content of this in file students.csv in the directory /var/lib/mysql-files on the
+# same server where mysql is running. 
+
+# Run this sql later after logging into mysql server. 
+> mysql -uroot -p<SPRING_BATCH_DBPASS>
+# where SPRING_BATCH_DBPASS is the password to your mysql server
+
+# Then at the mysql prompt, use the entire prompt after '>'
+> load data infile '/var/lib/mysql-files/students_data_only.csv' into table student fields terminated by ',' optionally enclosed by '"' lines terminated by '\n' (id, first_name, last_name, email)
