@@ -20,6 +20,7 @@ import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,8 +43,7 @@ public class SampleJob {
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 	
-	@Autowired
-	private DataSource dataSource;
+	
 	
 //	@Autowired
 //	private SecondTasklet secondTasklet;
@@ -62,9 +62,18 @@ public class SampleJob {
 	
 	@Autowired
 	private FirstItemWriter firstItemWriter;
+	
 	@Autowired 
 	private static final Logger logger = LoggerFactory.getLogger(SampleJob.class);
 
+	@Autowired
+	@Qualifier("datasource")
+	private DataSource datasource;
+	
+	@Autowired
+	@Qualifier("universitydatasource")
+	private DataSource universitydatasource;
+	
 	@Bean
 	public Job secondJob() {
 		return new JobBuilder("Second Job", jobRepository)
@@ -158,7 +167,7 @@ public class SampleJob {
 	public JdbcCursorItemReader<StudentJdbc> jdbcCursorItemReader() 
 	{ 
 		var jdbcCursorItemReader = new JdbcCursorItemReader<StudentJdbc>();
-		jdbcCursorItemReader.setDataSource(dataSource);
+		jdbcCursorItemReader.setDataSource(universitydatasource);
 		jdbcCursorItemReader.setSql(
 			"select id "
 			+ ",first_name as firstName "
