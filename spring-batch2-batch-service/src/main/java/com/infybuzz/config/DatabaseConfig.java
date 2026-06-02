@@ -16,10 +16,11 @@ public class DatabaseConfig {
 	public DataSource datasource() { 
 		return DataSourceBuilder.create().build();
 	}
-	
+
 	@Bean
 	@ConfigurationProperties(prefix = "spring.universitydatasource")
 	public DataSource universitydatasource() { 
 		return DataSourceBuilder.create().build();
 	}
+
 }

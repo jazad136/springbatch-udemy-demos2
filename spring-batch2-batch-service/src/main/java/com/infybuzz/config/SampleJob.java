@@ -11,6 +11,7 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -32,7 +33,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.infybuzz.model.StudentCsv;
 import com.infybuzz.model.StudentJdbc;
 import com.infybuzz.model.StudentJson;
+import com.infybuzz.model.StudentResponse;
 import com.infybuzz.model.StudentXml;
+import com.infybuzz.service.StudentService;
 import com.infybuzz.writer.FirstItemWriter;
 @Configuration
 public class SampleJob {
@@ -42,23 +45,6 @@ public class SampleJob {
 	private JobRepository jobRepository;
 	@Autowired
 	private PlatformTransactionManager transactionManager;
-	
-	
-	
-//	@Autowired
-//	private SecondTasklet secondTasklet;
-	
-//	@Autowired
-//	private FirstJobListener firstJobListener;
-	
-//	@Autowired
-//	private FirstStepListener firstStepListener;
-
-//	@Autowired
-//	private FirstItemReader firstItemReader;
-	
-//	@Autowired
-//	private FirstItemProcessor firstItemProcessor;
 	
 	@Autowired
 	private FirstItemWriter firstItemWriter;
@@ -74,6 +60,9 @@ public class SampleJob {
 	@Qualifier("universitydatasource")
 	private DataSource universitydatasource;
 	
+	@Autowired
+	private StudentService studentService;
+
 	@Bean
 	public Job secondJob() {
 		return new JobBuilder("Second Job", jobRepository)
@@ -84,11 +73,12 @@ public class SampleJob {
 	
 	public Step firstChunkStep() { 
 		return new StepBuilder("First Chunk Step", jobRepository)
-				.<StudentJdbc, StudentJdbc>chunk(3, transactionManager)
+				.<StudentResponse, StudentResponse>chunk(3, transactionManager)
 //				.reader(flatFileItemReader(null))
 //				.reader(jsonItemReader(null))
 //				.reader(staxEventItemReader(null))
-				.reader(jdbcCursorItemReader())
+//				.reader(jdbcCursorItemReader())
+				.reader(itemReaderAdapter())
 //				.processor(firstItemProcessor)
 				.writer(firstItemWriter)
 				.build();
@@ -174,11 +164,19 @@ public class SampleJob {
 			+ ",last_name as lastName "
 			+ ",email"
 			+ " from student");
-		jdbcCursorItemReader.setRowMapper(new BeanPropertyRowMapper<StudentJdbc>() { 
+		jdbcCursorItemReader.setRowMapper(new BeanPropertyRowMapper<StudentJdbc>() {
 			{
 				setMappedClass(StudentJdbc.class);
 			}
 		});
 		return jdbcCursorItemReader;
+	}
+	public ItemReaderAdapter<StudentResponse> itemReaderAdapter() {
+		ItemReaderAdapter<StudentResponse> itemReaderAdapter = new ItemReaderAdapter<StudentResponse>();
+
+		itemReaderAdapter.setTargetObject(studentService);
+		itemReaderAdapter.setTargetMethod("getStudent");
+
+		return itemReaderAdapter;
 	}
 }
