@@ -85,7 +85,7 @@ public class SampleJob {
 	
 	public Step firstChunkStep() { 
 		return new StepBuilder("First Chunk Step", jobRepository)
-				.<StudentJdbc, StudentJdbc>chunk(3, transactionManager)
+				.<StudentJdbc, StudentJson>chunk(3, transactionManager)
 //				.reader(flatFileItemReader(null))
 //				.reader(jsonItemReader(null))
 //				.reader(staxEventItemReader(null))
@@ -229,11 +229,11 @@ public class SampleJob {
 	}
 	@StepScope
 	@Bean
-	public JsonFileItemWriter<StudentJdbc> jsonFileItemWriter(
+	public JsonFileItemWriter<StudentJson> jsonFileItemWriter(
 			@Value("#{jobParameters['outputFile']}") FileSystemResource fileSystemResource) {
-		JsonFileItemWriter<StudentJdbc> jsonFileItemWriter = 
+		JsonFileItemWriter<StudentJson> jsonFileItemWriter = 
 				new JsonFileItemWriter<>(fileSystemResource, 
-						new JacksonJsonObjectMarshaller<StudentJdbc>());
+						new JacksonJsonObjectMarshaller<StudentJson>());
 		return jsonFileItemWriter;
 	}
 }
