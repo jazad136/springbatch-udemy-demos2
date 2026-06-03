@@ -1,6 +1,5 @@
 package com.infybuzz.model;
 
-import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="student")

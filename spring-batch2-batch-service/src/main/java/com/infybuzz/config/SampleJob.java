@@ -31,6 +31,7 @@ import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonFileItemWriter;
 import org.springframework.batch.item.json.JsonItemReader;
 import org.springframework.batch.item.xml.StaxEventItemReader;
+import org.springframework.batch.item.xml.StaxEventItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,7 +86,7 @@ public class SampleJob {
 	
 	public Step firstChunkStep() { 
 		return new StepBuilder("First Chunk Step", jobRepository)
-				.<StudentJdbc, StudentJson>chunk(3, transactionManager)
+				.<StudentJdbc, StudentJdbc>chunk(3, transactionManager)
 //				.reader(flatFileItemReader(null))
 //				.reader(jsonItemReader(null))
 //				.reader(staxEventItemReader(null))
@@ -94,7 +95,8 @@ public class SampleJob {
 //				.processor(firstItemProcessor)
 //				.writer(firstItemWriter)
 //				.writer(flatFileItemWriter(null))
-				.writer(jsonFileItemWriter(null))
+//				.writer(jsonFileItemWriter(null))
+				.writer(staxEventItemWriter(null))
 				.build();
 	}
 	
@@ -235,5 +237,21 @@ public class SampleJob {
 				new JsonFileItemWriter<>(fileSystemResource, 
 						new JacksonJsonObjectMarshaller<StudentJson>());
 		return jsonFileItemWriter;
+	}
+	
+	@StepScope
+	@Bean
+	public StaxEventItemWriter<StudentJdbc> staxEventItemWriter(
+			@Value("#{jobParameters['outputFile']}") FileSystemResource fileSystemResource) {
+		StaxEventItemWriter<StudentJdbc> staxEventItemWriter = 
+				new StaxEventItemWriter<StudentJdbc>();
+		staxEventItemWriter.setResource(fileSystemResource);
+		staxEventItemWriter.setRootTagName("students");
+		staxEventItemWriter.setMarshaller(new Jaxb2Marshaller() {
+			{
+				setClassesToBeBound(StudentJdbc.class);
+			}
+		});
+		return staxEventItemWriter;
 	}
 }

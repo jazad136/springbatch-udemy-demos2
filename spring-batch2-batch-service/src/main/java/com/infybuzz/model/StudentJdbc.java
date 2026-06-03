@@ -2,9 +2,11 @@ package com.infybuzz.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "student")
 public class StudentJdbc {
 	private Long id;
-	@JsonProperty("first_name")
 	private String firstName;
 	private String lastName;
 	private String email;
