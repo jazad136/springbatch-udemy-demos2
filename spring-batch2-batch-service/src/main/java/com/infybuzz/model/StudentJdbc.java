@@ -1,10 +1,7 @@
 package com.infybuzz.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class StudentJdbc {
 	private Long id;
-	@JsonProperty("first_name")
 	private String firstName;
 	private String lastName;
 	private String email;
