@@ -34,7 +34,7 @@ public class StudentService {
 	}
 	public StudentResponse restCallToCreateStudent(StudentCsv studentCsv) { 
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.postForObject("http://localhost:8081/api/v1/createStudent",
+		return restTemplate.postForObject("http://localhost:8081/api/v1/createStudent",
 				studentCsv, StudentResponse.class);
 	}
 }
