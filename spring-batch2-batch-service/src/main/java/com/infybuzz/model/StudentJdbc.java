@@ -1,7 +1,6 @@
 package com.infybuzz.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "student")
@@ -17,6 +16,7 @@ public class StudentJdbc {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	@XmlElement(name="first_name")
 	public String getFirstName() {
 		return firstName;
 	}
