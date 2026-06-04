@@ -9,7 +9,7 @@ repo maintained by Jonathan A. Saddler, Ph. D.
 
 #### Contents: 
 
-**Item Reader, Item Writer, Item Processor, for **
+**Goal: Item Reader, Item Writer, Item Processor, for**
 - _XML_
 - _JSON_
 - _JDBC_
