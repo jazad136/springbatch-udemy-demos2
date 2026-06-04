@@ -16,6 +16,8 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.adapter.ItemReaderAdapter;
+import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.file.FlatFileFooterCallback;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
@@ -86,17 +88,18 @@ public class SampleJob {
 	
 	public Step firstChunkStep() { 
 		return new StepBuilder("First Chunk Step", jobRepository)
-				.<StudentJdbc, StudentJdbc>chunk(3, transactionManager)
-//				.reader(flatFileItemReader(null))
+				.<StudentCsv, StudentCsv>chunk(3, transactionManager)
+				.reader(flatFileItemReader(null))
 //				.reader(jsonItemReader(null))
 //				.reader(staxEventItemReader(null))
-				.reader(jdbcCursorItemReader())
+//				.reader(jdbcCursorItemReader())
 //				.reader(itemReaderAdapter())
 //				.processor(firstItemProcessor)
 //				.writer(firstItemWriter)
 //				.writer(flatFileItemWriter(null))
 //				.writer(jsonFileItemWriter(null))
-				.writer(staxEventItemWriter(null))
+//				.writer(staxEventItemWriter(null))
+				.writer(jdbcBatchItemWriter())
 				.build();
 	}
 	
@@ -135,8 +138,8 @@ public class SampleJob {
 		fieldSetMapper.setTargetType(StudentCsv.class);
 		defaultLineMapper.setFieldSetMapper(fieldSetMapper);
 		flatFileItemReader.setLineMapper(defaultLineMapper);
-		flatFileItemReader.setLinesToSkip(1);
 		*/
+		flatFileItemReader.setLinesToSkip(1);
 		return flatFileItemReader;
 		
 	}
@@ -208,13 +211,12 @@ public class SampleJob {
 		{ 	
 			@Override
 			public void writeHeader(Writer writer) throws IOException {
-				writer.write("Id|First Name|Last Name|Email");
+				writer.write("Id, First Name, Last Name, Email");
 				
 			}
 		});
 		flatFileItemWriter.setLineAggregator(new DelimitedLineAggregator<StudentJdbc>(){
 			{ 
-				setDelimiter("|");
 				setFieldExtractor(new BeanWrapperFieldExtractor<StudentJdbc>() {
 					{
 						setNames(new String[] {"id", "firstName", "lastName", "email"});
@@ -252,6 +254,19 @@ public class SampleJob {
 				setClassesToBeBound(StudentJdbc.class);
 			}
 		});
+		
 		return staxEventItemWriter;
+	}
+	
+	@Bean
+	public JdbcBatchItemWriter<StudentCsv> jdbcBatchItemWriter() {
+		JdbcBatchItemWriter<StudentCsv> jdbcBatchItemWriter = new JdbcBatchItemWriter<>();
+		jdbcBatchItemWriter.setDataSource(universitydatasource);
+		jdbcBatchItemWriter.setSql("insert into student(id, first_name, last_name, email)"
+				+ "values (:id, :firstName, :lastName, :email)");
+		jdbcBatchItemWriter.setItemSqlParameterSourceProvider(
+				new BeanPropertyItemSqlParameterSourceProvider<StudentCsv>());
+		
+		return jdbcBatchItemWriter;
 	}
 }
