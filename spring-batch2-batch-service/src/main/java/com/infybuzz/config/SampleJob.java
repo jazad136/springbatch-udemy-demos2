@@ -2,6 +2,8 @@ package com.infybuzz.config;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Date;
 
 import javax.sql.DataSource;
@@ -17,6 +19,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
+import org.springframework.batch.item.database.ItemPreparedStatementSetter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.file.FlatFileFooterCallback;
@@ -99,7 +102,8 @@ public class SampleJob {
 //				.writer(flatFileItemWriter(null))
 //				.writer(jsonFileItemWriter(null))
 //				.writer(staxEventItemWriter(null))
-				.writer(jdbcBatchItemWriter())
+//				.writer(jdbcBatchItemWriter())
+				.writer(jdbcBatchItemWriter1())
 				.build();
 	}
 	
@@ -267,6 +271,24 @@ public class SampleJob {
 		jdbcBatchItemWriter.setItemSqlParameterSourceProvider(
 				new BeanPropertyItemSqlParameterSourceProvider<StudentCsv>());
 		
+		return jdbcBatchItemWriter;
+	}
+
+	@Bean
+	public JdbcBatchItemWriter<StudentCsv> jdbcBatchItemWriter1() {
+		JdbcBatchItemWriter<StudentCsv> jdbcBatchItemWriter = new JdbcBatchItemWriter<>();
+		jdbcBatchItemWriter.setDataSource(universitydatasource);
+		jdbcBatchItemWriter.setSql("insert into student(id, first_name, last_name, email)"
+				+ "values (?, ?, ?, ?)");
+		jdbcBatchItemWriter.setItemPreparedStatementSetter(new ItemPreparedStatementSetter<StudentCsv>() {
+			@Override
+			public void setValues(StudentCsv item, PreparedStatement ps) throws SQLException {
+				ps.setLong(1, item.getId());
+				ps.setString(2, item.getFirstName());
+				ps.setString(3, item.getLastName());
+				ps.setString(4, item.getEmail());
+			}
+		});
 		return jdbcBatchItemWriter;
 	}
 }
