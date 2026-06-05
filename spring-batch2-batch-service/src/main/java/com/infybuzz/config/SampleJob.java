@@ -90,6 +90,9 @@ public class SampleJob {
 	@Autowired
 	private SkipListener skipListener;
 	
+	@Autowired
+	private SkipListener skipListenerImpl;
+	
 	SampleJob(FirstItemProcessor firstItemProcessor) {
 		this.firstItemProcessor = firstItemProcessor;
 	}
@@ -113,7 +116,8 @@ public class SampleJob {
 //				.skip(NullPointerException.class)
 //				.skipLimit(Integer.MAX_VALUE)
 				.skipPolicy(new AlwaysSkipItemSkipPolicy())
-				.listener(skipListener)
+//				.listener(skipListener)
+				.listener(skipListenerImpl)
 				.build();
 	}
 	
