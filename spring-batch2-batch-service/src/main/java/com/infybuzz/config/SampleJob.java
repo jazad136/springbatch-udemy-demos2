@@ -115,7 +115,11 @@ public class SampleJob {
 				.skip(Throwable.class)
 //				.skip(NullPointerException.class)
 //				.skipLimit(Integer.MAX_VALUE)
-				.skipPolicy(new AlwaysSkipItemSkipPolicy())
+//				.skipPolicy(new AlwaysSkipItemSkipPolicy())
+				// do not skip unlimited and retry
+				.skipLimit(100)
+				.retryLimit(3)
+				.retry(Throwable.class)
 //				.listener(skipListener)
 				.listener(skipListenerImpl)
 				.build();
@@ -248,6 +252,7 @@ public class SampleJob {
 				public String doWrite(Chunk<? extends StudentJson> items) {
 					items.getItems().stream().forEach(item -> {
 						if(item.getId() == 3) { 
+							System.err.println("Inside jsonFileItemWriter");
 							throw new NullPointerException();
 						}
 					});
