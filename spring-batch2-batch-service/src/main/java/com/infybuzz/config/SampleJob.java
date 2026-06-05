@@ -28,7 +28,6 @@ import org.springframework.batch.item.file.FlatFileFooterCallback;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
@@ -51,6 +50,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.infybuzz.listener.SkipListener;
 import com.infybuzz.model.StudentCsv;
 import com.infybuzz.model.StudentJdbc;
 import com.infybuzz.model.StudentJson;
@@ -86,13 +86,16 @@ public class SampleJob {
 	@Autowired
 	private StudentService studentService;
 
+	@Autowired
+	private SkipListener skipListener;
+	
 	SampleJob(FirstItemProcessor firstItemProcessor) {
 		this.firstItemProcessor = firstItemProcessor;
 	}
 
 	@Bean
 	public Job secondJob() {
-		return new JobBuilder("Second Job", jobRepository)
+		return new JobBuilder("Chunk Job", jobRepository)
 				.incrementer(new RunIdIncrementer())
 				.start(firstChunkStep())
 				.build();
@@ -109,6 +112,7 @@ public class SampleJob {
 //				.skip(NullPointerException.class)
 //				.skipLimit(Integer.MAX_VALUE)
 				.skipPolicy(new AlwaysSkipItemSkipPolicy())
+				.listener(skipListener)
 				.build();
 	}
 	
