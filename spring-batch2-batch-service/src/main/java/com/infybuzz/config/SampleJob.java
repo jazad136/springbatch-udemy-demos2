@@ -85,6 +85,10 @@ public class SampleJob {
 	private DataSource universitydatasource;
 	
 	@Autowired
+	@Qualifier("postgresdatasource")
+	private DataSource postgresdatasource;
+	
+	@Autowired
 	private StudentService studentService;
 
 	@Autowired
