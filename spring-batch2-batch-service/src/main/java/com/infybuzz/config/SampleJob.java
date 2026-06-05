@@ -18,6 +18,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.skip.AlwaysSkipItemSkipPolicy;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.item.adapter.ItemWriterAdapter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
@@ -238,7 +239,18 @@ public class SampleJob {
 			@Value("#{jobParameters['outputFile']}") FileSystemResource fileSystemResource) {
 		JsonFileItemWriter<StudentJson> jsonFileItemWriter = 
 				new JsonFileItemWriter<>(fileSystemResource, 
-						new JacksonJsonObjectMarshaller<StudentJson>());
+						new JacksonJsonObjectMarshaller<StudentJson>()) {
+				@Override
+				public String doWrite(Chunk<? extends StudentJson> items) {
+					items.getItems().stream().forEach(item -> {
+						if(item.getId() == 3) { 
+							throw new NullPointerException();
+						}
+					});
+					return super.doWrite(items);
+				}
+		};
+		
 		return jsonFileItemWriter;
 	}
 	
