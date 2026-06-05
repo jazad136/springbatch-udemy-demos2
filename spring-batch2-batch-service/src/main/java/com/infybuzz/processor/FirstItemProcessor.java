@@ -11,9 +11,8 @@ import com.infybuzz.model.StudentJson;
 public class FirstItemProcessor implements ItemProcessor<StudentCsv, StudentJson>{
 	@Override
 	public StudentJson process(StudentCsv item) throws Exception {
-		System.err.println("Inside Item Processor");
-		
 		if(item.getId() == 6) { 
+			System.err.println("Inside Item Processor");
 			throw new NullPointerException();
 		}
 		StudentJson studentJson = new StudentJson();
