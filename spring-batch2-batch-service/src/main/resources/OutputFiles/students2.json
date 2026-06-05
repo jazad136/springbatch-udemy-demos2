@@ -1,7 +1,6 @@
 [
  {"id":1,"lastName":"Smith","email":"john@gmail.com","first_name":"John"},
  {"id":2,"lastName":"Dave","email":"sachin@gmail.com","first_name":"Sachin"},
- {"id":3,"lastName":"Mark","email":"peter@gmail.com","first_name":"Peter"},
  {"id":5,"lastName":"Patel","email":"raj@gmail.com","first_name":"Raj"},
  {"id":8,"lastName":"Kapoor","email":"tina@gmail.com","first_name":"Tina"},
  {"id":9,"lastName":"Sharma","email":"mona@gmail.com","first_name":"Mona"},
