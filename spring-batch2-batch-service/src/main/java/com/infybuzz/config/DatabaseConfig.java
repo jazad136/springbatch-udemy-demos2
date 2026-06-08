@@ -34,6 +34,7 @@ public class DatabaseConfig {
 		return DataSourceBuilder.create().build();
 	}
 
+	@Bean
 	public EntityManagerFactory postgresqlEntityManagerFactory(DataSource postgresdatasource) {
 		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
 		lem.setDataSource(postgresdatasource);
@@ -43,7 +44,8 @@ public class DatabaseConfig {
 		lem.afterPropertiesSet();
 		return lem.getObject();
 	}
-
+	
+	@Bean
 	public EntityManagerFactory mysqlEntityManagerFactory(DataSource universitydatasource) {
 		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
 		lem.setDataSource(universitydatasource);
