@@ -14,7 +14,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 	"com.infybuzz.processor",
 	"com.infybuzz.writer",
 	"com.infybuzz.listener",
-	"com.infybuzz.controller"})
+	"com.infybuzz.controller",
+	"com.infybuzz.repo"})
 @EnableAsync
 @EnableBatchProcessing
 @EnableJpaRepositories(entityManagerFactoryRef = "mysqlEntityManagerFactory", transactionManagerRef = "jpaTransactionManager")

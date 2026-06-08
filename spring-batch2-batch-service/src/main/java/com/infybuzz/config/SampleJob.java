@@ -72,8 +72,8 @@ public class SampleJob {
 	private final FirstItemProcessor firstItemProcessor;
 	@Autowired
 	private JobRepository jobRepository;
-//	@Autowired
-//	private PlatformTransactionManager transactionManager;
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 	
 	@Autowired
 	private FirstItemWriter firstItemWriter;
@@ -128,7 +128,7 @@ public class SampleJob {
 	
 	public Step firstChunkStep() { 
 		return new StepBuilder("First Chunk Step", jobRepository)
-				.<Student, com.infybuzz.mysql.entity.Student>chunk(3, jpaTransactionManager)
+				.<Student, com.infybuzz.mysql.entity.Student>chunk(3, transactionManager)
 //				.reader(flatFileItemReader(null))
 				.reader(jpaCursorItemReader())
 				.processor(firstItemProcessor)
@@ -146,7 +146,7 @@ public class SampleJob {
 				.retry(Throwable.class)
 //				.listener(skipListener)
 				.listener(skipListenerImpl)
-				.transactionManager(jpaTransactionManager)
+				.transactionManager(transactionManager)
 				.build();
 	}
 	
