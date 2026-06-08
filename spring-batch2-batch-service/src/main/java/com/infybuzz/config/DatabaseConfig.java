@@ -57,7 +57,7 @@ public class DatabaseConfig {
 
 	@Bean
 	@Primary
-	public JpaTransactionManager jpaTransactionManager(DataSource universitydatasource, EntityManagerFactory mysqlEntityManagerFactory) {
+	public JpaTransactionManager transactionManager(DataSource universitydatasource, EntityManagerFactory mysqlEntityManagerFactory) {
 		JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
 		jpaTransactionManager.setDataSource(universitydatasource);
 		jpaTransactionManager.setEntityManagerFactory(mysqlEntityManagerFactory);
