@@ -34,7 +34,6 @@ public class DatabaseConfig {
 		return DataSourceBuilder.create().build();
 	}
 
-	@Bean("entityManagerFactory")
 	public EntityManagerFactory postgresqlEntityManagerFactory(DataSource postgresdatasource) {
 		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
 		lem.setDataSource(postgresdatasource);
