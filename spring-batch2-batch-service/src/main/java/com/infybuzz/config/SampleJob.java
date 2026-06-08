@@ -8,7 +8,6 @@ import java.util.Date;
 
 import javax.sql.DataSource;
 
-import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -50,8 +49,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -104,6 +102,9 @@ public class SampleJob {
 	private EntityManagerFactory mysqlEntityManagerFactory;
 	
 	@Autowired
+	private JpaTransactionManager jpaTransactionManager;
+	
+	@Autowired
 	private StudentService studentService;
 
 	@Autowired
@@ -127,12 +128,15 @@ public class SampleJob {
 	
 	public Step firstChunkStep() { 
 		return new StepBuilder("First Chunk Step", jobRepository)
-				.<StudentCsv, StudentJson>chunk(3, transactionManager)
-				.reader(flatFileItemReader(null))
+				.<Student, com.infybuzz.mysql.entity.Student>chunk(3, jpaTransactionManager)
+//				.reader(flatFileItemReader(null))
+				.reader(jpaCursorItemReader())
 				.processor(firstItemProcessor)
-				.writer(jsonFileItemWriter(null))
+//				.writer(jsonFileItemWriter(null))
+				.writer(jpaItemWriter())
 				.faultTolerant()
 				.skip(Throwable.class)
+				
 //				.skip(NullPointerException.class)
 //				.skipLimit(Integer.MAX_VALUE)
 //				.skipPolicy(new AlwaysSkipItemSkipPolicy())
@@ -142,6 +146,7 @@ public class SampleJob {
 				.retry(Throwable.class)
 //				.listener(skipListener)
 				.listener(skipListenerImpl)
+				.transactionManager(jpaTransactionManager)
 				.build();
 	}
 	

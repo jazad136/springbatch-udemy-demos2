@@ -54,4 +54,14 @@ public class DatabaseConfig {
 		lem.afterPropertiesSet();
 		return lem.getObject();
 	}
+
+
+	@Bean
+	@Primary
+	public JpaTransactionManager jpaTransactionManager() {
+		JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+		jpaTransactionManager.setDataSource(universitydatasource());
+		jpaTransactionManager.setEntityManagerFactory(mysqlEntityManagerFactory());
+		return jpaTransactionManager;
+	}
 }
