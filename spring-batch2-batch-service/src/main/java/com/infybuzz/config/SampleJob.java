@@ -102,6 +102,7 @@ public class SampleJob {
 	private EntityManagerFactory mysqlEntityManagerFactory;
 	
 	@Autowired
+	@Qualifier("transactionManager")
 	private JpaTransactionManager jpaTransactionManager;
 	
 	@Autowired
