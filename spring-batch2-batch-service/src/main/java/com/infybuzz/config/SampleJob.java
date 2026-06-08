@@ -8,6 +8,7 @@ import java.util.Date;
 
 import javax.sql.DataSource;
 
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -17,7 +18,6 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.core.step.skip.AlwaysSkipItemSkipPolicy;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.adapter.ItemReaderAdapter;
 import org.springframework.batch.item.adapter.ItemWriterAdapter;
@@ -25,6 +25,8 @@ import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourc
 import org.springframework.batch.item.database.ItemPreparedStatementSetter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
+import org.springframework.batch.item.database.JpaCursorItemReader;
+import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.file.FlatFileFooterCallback;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -48,6 +50,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -57,9 +61,12 @@ import com.infybuzz.model.StudentJdbc;
 import com.infybuzz.model.StudentJson;
 import com.infybuzz.model.StudentResponse;
 import com.infybuzz.model.StudentXml;
+import com.infybuzz.postgresql.entity.Student;
 import com.infybuzz.processor.FirstItemProcessor;
 import com.infybuzz.service.StudentService;
 import com.infybuzz.writer.FirstItemWriter;
+
+import jakarta.persistence.EntityManagerFactory;
 @Configuration
 public class SampleJob {
 
@@ -89,6 +96,14 @@ public class SampleJob {
 	private DataSource postgresdatasource;
 	
 	@Autowired
+	@Qualifier("postgresqlEntityManagerFactory")
+	private EntityManagerFactory postgresqlEntityManagerFactory;
+	
+	@Autowired
+	@Qualifier("mysqlEntityManagerFactory")
+	private EntityManagerFactory mysqlEntityManagerFactory;
+	
+	@Autowired
 	private StudentService studentService;
 
 	@Autowired
@@ -101,6 +116,7 @@ public class SampleJob {
 		this.firstItemProcessor = firstItemProcessor;
 	}
 
+	
 	@Bean
 	public Job secondJob() {
 		return new JobBuilder("Chunk Job", jobRepository)
@@ -322,5 +338,18 @@ public class SampleJob {
 		// we don't need to worry about passing each StudentCsv into targetMethod
 		// spring batch will handle it. 
 		return itemWriterAdapter;
+	}
+	
+	public JpaCursorItemReader<Student> jpaCursorItemReader() { 
+		JpaCursorItemReader<Student> jpaCursorItemReader = new JpaCursorItemReader<Student>();
+		jpaCursorItemReader.setEntityManagerFactory(postgresqlEntityManagerFactory);
+		jpaCursorItemReader.setQueryString("From Student");
+		return jpaCursorItemReader;
+	}
+	public JpaItemWriter<com.infybuzz.mysql.entity.Student> jpaItemWriter() { 
+		JpaItemWriter<com.infybuzz.mysql.entity.Student> jpaItemWriter = 
+				new JpaItemWriter<com.infybuzz.mysql.entity.Student>();
+		jpaItemWriter.setEntityManagerFactory(mysqlEntityManagerFactory);
+		return jpaItemWriter;
 	}
 }
