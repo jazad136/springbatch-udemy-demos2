@@ -72,8 +72,8 @@ public class SampleJob {
 	private final FirstItemProcessor firstItemProcessor;
 	@Autowired
 	private JobRepository jobRepository;
-	@Autowired
-	private PlatformTransactionManager transactionManager;
+//	@Autowired
+//	private PlatformTransactionManager transactionManager;
 	
 	@Autowired
 	private FirstItemWriter firstItemWriter;

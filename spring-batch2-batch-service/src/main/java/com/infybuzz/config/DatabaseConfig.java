@@ -34,10 +34,10 @@ public class DatabaseConfig {
 		return DataSourceBuilder.create().build();
 	}
 
-	@Bean
-	public EntityManagerFactory postgresqlEntityManagerFactory() {
+//	@Bean(name = "entityManagerFactory")
+	public EntityManagerFactory postgresqlEntityManagerFactory(DataSource postgresdatasource) {
 		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
-		lem.setDataSource(postgresdatasource());
+		lem.setDataSource(postgresdatasource);
 		lem.setPackagesToScan("com.infybuzz.postgresql.entity");
 		lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
@@ -45,10 +45,9 @@ public class DatabaseConfig {
 		return lem.getObject();
 	}
 	@Bean
-	@Primary
-	public EntityManagerFactory mysqlEntityManagerFactory() {
+	public EntityManagerFactory mysqlEntityManagerFactory(DataSource universitydatasource) {
 		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
-		lem.setDataSource(universitydatasource());
+		lem.setDataSource(universitydatasource);
 		lem.setPackagesToScan("com.infybuzz.mysql.entity");
 		lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
@@ -59,10 +58,10 @@ public class DatabaseConfig {
 
 	@Bean
 	@Primary
-	public JpaTransactionManager jpaTransactionManager() {
+	public JpaTransactionManager jpaTransactionManager(DataSource universitydatasource, EntityManagerFactory mysqlEntityManagerFactory) {
 		JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
-		jpaTransactionManager.setDataSource(universitydatasource());
-		jpaTransactionManager.setEntityManagerFactory(mysqlEntityManagerFactory());
+		jpaTransactionManager.setDataSource(universitydatasource);
+		jpaTransactionManager.setEntityManagerFactory(mysqlEntityManagerFactory);
 		return jpaTransactionManager;
 	}
 }
