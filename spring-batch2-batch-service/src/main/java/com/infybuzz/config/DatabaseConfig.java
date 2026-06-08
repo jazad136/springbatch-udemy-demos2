@@ -2,11 +2,17 @@ package com.infybuzz.config;
 
 import javax.sql.DataSource;
 
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+
+import jakarta.persistence.EntityManagerFactory;
 
 @Configuration
 public class DatabaseConfig {
@@ -28,4 +34,24 @@ public class DatabaseConfig {
 		return DataSourceBuilder.create().build();
 	}
 
+	@Bean
+	public EntityManagerFactory postgresqlEntityManagerFactory() {
+		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
+		lem.setDataSource(postgresdatasource());
+		lem.setPackagesToScan("com.infybuzz.postgresql.entity");
+		lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+		lem.afterPropertiesSet();
+		return lem.getObject();
+	}
+	@Bean
+	public EntityManagerFactory mysqlEntityManagerFactory() {
+		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
+		lem.setDataSource(universitydatasource());
+		lem.setPackagesToScan("com.infybuzz.mysql.entity");
+		lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+		lem.afterPropertiesSet();
+		return lem.getObject();
+	}
 }
