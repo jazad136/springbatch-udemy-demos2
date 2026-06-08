@@ -81,9 +81,9 @@ public class SampleJob {
 	@Autowired 
 	private static final Logger logger = LoggerFactory.getLogger(SampleJob.class);
 
-//	@Autowired
-//	@Qualifier("datasource")
-//	private DataSource datasource;
+	@Autowired
+	@Qualifier("dataSource")
+	private DataSource dataSource;
 	
 	@Autowired
 	@Qualifier("universitydatasource")
