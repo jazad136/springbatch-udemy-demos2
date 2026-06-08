@@ -44,7 +44,7 @@ public class DatabaseConfig {
 		lem.afterPropertiesSet();
 		return lem.getObject();
 	}
-	@Bean("entityManagerFactory")
+
 	public EntityManagerFactory mysqlEntityManagerFactory(DataSource universitydatasource) {
 		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
 		lem.setDataSource(universitydatasource);
