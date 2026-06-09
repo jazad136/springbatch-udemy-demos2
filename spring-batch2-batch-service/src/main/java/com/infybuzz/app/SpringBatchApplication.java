@@ -2,10 +2,11 @@ package com.infybuzz.app;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @ComponentScan({"com.infybuzz.config", 
@@ -16,9 +17,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 	"com.infybuzz.listener",
 	"com.infybuzz.controller",
 	"com.infybuzz.repo"})
-@EnableAsync
+//@EnableAsync
 @EnableBatchProcessing
-@EnableJpaRepositories(entityManagerFactoryRef = "mysqlEntityManagerFactory", transactionManagerRef = "jpaTransactionManager")
+@EnableJpaRepositories
+//@EnableAutoConfiguration(exclude = {HibernateJpaAutoConfiguration.class})
 public class SpringBatchApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBatchApplication.class, args);
