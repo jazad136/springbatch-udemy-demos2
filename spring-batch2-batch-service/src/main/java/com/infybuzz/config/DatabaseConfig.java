@@ -16,57 +16,58 @@ import jakarta.persistence.EntityManagerFactory;
 
 @Configuration
 public class DatabaseConfig {
-	@Bean
-	@Primary
-	@ConfigurationProperties(prefix = "spring.datasource")
-	public DataSource dataSource() { 
-		return DataSourceBuilder.create().build();
-	}
-
-	@Bean
-	@ConfigurationProperties(prefix = "spring.universitydatasource")
-	public DataSource universitydatasource() { 
-		return DataSourceBuilder.create().build();
-	} 
-	@Bean
-	@ConfigurationProperties(prefix = "spring.postgresdatasource")
-	public DataSource postgresdatasource() { 
-		return DataSourceBuilder.create().build();
-	}
-
-	@Bean
-	public EntityManagerFactory entityManagerFactory(DataSource postgresdatasource) {
-		return postgresqlEntityManagerFactory(postgresdatasource);
-	}
-	@Bean
-	public EntityManagerFactory postgresqlEntityManagerFactory(DataSource postgresdatasource) {
-		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
-		lem.setDataSource(postgresdatasource);
-		lem.setPackagesToScan("com.infybuzz.postgresql.entity");
-		lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-		lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-		lem.afterPropertiesSet();
-		return lem.getObject();
-	}
-	
-	@Bean
-	public EntityManagerFactory mysqlEntityManagerFactory(DataSource universitydatasource) {
-		LocalContainerEntityManagerFactoryBean lem = new LocalContainerEntityManagerFactoryBean();
-		lem.setDataSource(universitydatasource);
-		lem.setPackagesToScan("com.infybuzz.mysql.entity");
-		lem.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-		lem.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-		lem.afterPropertiesSet();
-		return lem.getObject();
-	}
-
-
-	@Bean
-	@Primary
-	public JpaTransactionManager transactionManager(DataSource universitydatasource, EntityManagerFactory mysqlEntityManagerFactory) {
-		JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
-		jpaTransactionManager.setDataSource(universitydatasource);
-		jpaTransactionManager.setEntityManagerFactory(mysqlEntityManagerFactory);
-		return jpaTransactionManager;
-	}
+ 
+   @Bean
+   @Primary
+   @ConfigurationProperties(prefix = "spring.datasource")
+   public DataSource datasource() {
+      return DataSourceBuilder.create().build();
+   }
+   
+   @Bean
+   @ConfigurationProperties(prefix = "spring.universitydatasource")
+   public DataSource universitydatasource() {
+      return DataSourceBuilder.create().build();
+   }
+   
+   @Bean
+   @ConfigurationProperties(prefix = "spring.postgresdatasource")
+   public DataSource postgresdatasource() {
+      return DataSourceBuilder.create().build();
+   }
+ 
+   @Bean
+   public EntityManagerFactory postgresqlEntityManagerFactory() {
+      LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean =
+            new LocalContainerEntityManagerFactoryBean();
+      localContainerEntityManagerFactoryBean.setDataSource(postgresdatasource());
+      localContainerEntityManagerFactoryBean.setPackagesToScan("com.infybuzz.postgresql.entity");
+      localContainerEntityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+      localContainerEntityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+      localContainerEntityManagerFactoryBean.afterPropertiesSet();
+ 
+      return localContainerEntityManagerFactoryBean.getObject();
+   }
+ 
+   @Bean
+   public EntityManagerFactory mysqlEntityManagerFactory() {
+      LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean =
+            new LocalContainerEntityManagerFactoryBean();
+      localContainerEntityManagerFactoryBean.setDataSource(universitydatasource());
+      localContainerEntityManagerFactoryBean.setPackagesToScan("com.infybuzz.springbatch.mysql.entity");
+      localContainerEntityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+      localContainerEntityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+      localContainerEntityManagerFactoryBean.afterPropertiesSet();
+ 
+      return localContainerEntityManagerFactoryBean.getObject();
+   }
+ 
+   @Bean
+   @Primary
+   public JpaTransactionManager jpaTransactionManager() {
+      JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+      jpaTransactionManager.setDataSource(universitydatasource());
+      jpaTransactionManager.setEntityManagerFactory(mysqlEntityManagerFactory());
+      return jpaTransactionManager;
+   }
 }
