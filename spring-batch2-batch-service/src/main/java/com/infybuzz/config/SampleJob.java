@@ -82,7 +82,7 @@ public class SampleJob {
 	private static final Logger logger = LoggerFactory.getLogger(SampleJob.class);
 
 	@Autowired
-	@Qualifier("dataSource")
+	@Qualifier("datasource")
 	private DataSource dataSource;
 	
 	@Autowired
